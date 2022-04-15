@@ -114,7 +114,7 @@ function closeTab(tabId) {
     // 2. remove page
     let pageId = "page-" + tabId.split("-")[1];
     document.getElementById(pageId).remove();
-    // 3. if to close active tab, then to active first tab
+    // 3. if the closed tab is active, then to active first tab from the remaining tabs
     if (isCurrTabActive) {
         let tabItems = document.getElementsByClassName("tab-item");
         if (tabItems.length > 0) {
