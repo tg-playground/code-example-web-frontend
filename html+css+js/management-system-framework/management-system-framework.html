@@ -26,6 +26,16 @@
             cursor: pointer;
         }
 
+        #menu .menu-item:hover {
+            color: #009d67;
+            background-color: darkgray;
+        }
+
+        #menu .menu-item-active {
+            color: #009d67;
+            background-color: darkgray;
+        }
+
         #main-right {
             background-color: gray;
             padding: 10px 10px 10px 10px;
@@ -153,6 +163,9 @@
     }
 
     function loadTabAndPage(menuId, menuName, url) {
+        Array.from(document.getElementsByClassName("menu-item"))
+            .forEach(item => item.classList.remove("menu-item-active"));
+        document.getElementById(menuId).classList.add("menu-item-active");
         let tabId = 'tab-' + menuId.split("-")[1];
         addTabIfNotExist(tabId, menuName);
         reloadPage('page-'+menuId.split("-")[1], url);
