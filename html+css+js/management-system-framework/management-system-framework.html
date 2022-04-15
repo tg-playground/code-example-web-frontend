@@ -80,6 +80,7 @@
         #content {
             padding: 10px 0px 10px 0px;
             background-color: lightgreen;
+            min-height: 70vh;
         }
 
         #footer {
@@ -166,6 +167,8 @@
         Array.from(document.getElementsByClassName("menu-item"))
             .forEach(item => item.classList.remove("menu-item-active"));
         document.getElementById(menuId).classList.add("menu-item-active");
+        Array.from(document.getElementsByClassName("my-page"))
+            .forEach(item => item.style.display = "none");
         let tabId = 'tab-' + menuId.split("-")[1];
         addTabIfNotExist(tabId, menuName);
         reloadPage('page-'+menuId.split("-")[1], url);
