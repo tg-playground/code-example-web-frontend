@@ -1,0 +1,4 @@
+div:hover {
+    /*use transitions to delay the :hover effect*/
+    transition-delay: 0.1s;
+}
