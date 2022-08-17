@@ -1,0 +1,45 @@
+.today {
+    background-color: darkgray;
+}
+
+.calendar-header {
+    display: flex;
+    height: 30px;
+}
+
+.calendar-row {
+    display: flex;
+}
+
+.calendar-header-item {
+    border-left: 1px solid black;
+    border-top: 1px solid black;
+    /*height: 100px;*/
+    width: 14%;
+    text-align: center;
+}
+
+.calendar-header-item:last-child {
+    border-right: 1px solid black;
+}
+
+.calendar-item {
+    border-left: 1px solid black;
+    border-top: 1px solid black;
+    /*height: 100px;*/
+    min-height: 60px;
+    width: 14%;
+    text-align: center;
+}
+
+.calendar-item:last-child {
+    border-right: 1px solid black;
+}
+
+.calendar-row:last-of-type .calendar-item {
+    border-bottom: 1px solid black;
+}
+
+.calendar-content-item {
+    margin: 5px 5px 5px 5px;
+}
