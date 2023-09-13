@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ChatGPT Demo</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <!-- highlight -->
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <!-- jquery -->
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+            integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+            crossorigin="anonymous"></script>
+    <!-- markdown-it -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js"
+            integrity="sha512-SYfDUYPg5xspsG6OOpXU366G8SZsdHOhqk/icdrYJ2E/WKZxPxze7d2HD3AyXpT7U22PZ5y74xRpqZ6A2bJ+kQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body style="padding: 0 5% 100px 5%">
+<h3>
+    ChatGPT Demo
+</h3>
+<div>
+    <textarea id="prompt" placeholder="prompt" rows="4" cols="60" style="font-size: 18px;"></textarea>
+    <input id="submit" type="submit"/>
+</div>
+<div>
+</div>
+<div id="dialog"
+     style="margin: 15px 0 0 0; font-size: 18px; line-height: 28px; font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;">
+</div>
+<hr>
+<div class="loader"></div>
+
+<script type="module">
+// <script type="application/javascript">
+    import hljs from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/es/highlight.min.js';
+    //  and it's easy to individually load additional languages
+    // import java from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/es/languages/java.min.js';
+    // hljs.registerLanguage('java', java);
+
+    //console.log("hello")
+    // const url = "http://localhost:8080/chat/getCompletion";
+    // const url = "http://localhost:9091/ai2/getCompletion";
+    const url = "http://gptApiServer:9091/ai2/getCompletion";
+    //const url = "http://gptApiServer:8080/chatbot/conversation";
+
+    var responseText;
+
+    function extractTextFromData(str) {
+        const regex = /"choices":\[{"index":0,"delta":{"content":"(.+?)"}/g
+        const matches = str.matchAll(regex);
+        let result = "";
+        for (const match of matches) {
+            ////console.log(match);
+            // let matchStr = decodeURIComponent(JSON.parse('"' + match[1].replace(/\"/g, '\\"') + '"'));;
+            let matchStr = match[1];
+            result += matchStr;
+            //console.log(matchStr);
+        }
+        return result;
+    }
+
+    function getMarkdownHtml(data) {
+        //console.log("before markdown: ", data)
+
+        var md = window.markdownit({
+            html: true,
+            linkify: true,
+            typographer: true,
+            quotes: '“”‘’',
+            breaks: true,
+            highlight: function (str, lang) {
+                if (lang && hljs.getLanguage(lang)) {
+                    try {
+                        return '<pre class="hljs"><code>' +
+                            hljs.highlight(str, {language: lang, ignoreIllegals: true}).value +
+                            '</code></pre>';
+                    } catch (__) {
+                    }
+                }
+                return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>';
+            }
+        });
+        let markdownHtml = md.render(data);
+        //console.log("markdownHtml", markdownHtml);
+        return markdownHtml;
+    }
+
+
+    function readTextStreamByAjax(prompt) {
+        $("#submit").prop("disabled", true);
+        document.getElementsByClassName("loader")[0].style.display = "block";
+        var lastResponseLen = false;
+        $("#dialog").empty();
+        responseText = "";
+        $.ajax({
+            contentType: "application/json",
+            data: prompt,
+            type: "POST",
+            url: url,
+            xhrFields: {
+                onprogress: function (e) {
+                    console.log("onprogress....")
+                    document.getElementsByClassName("loader")[0].style.display = "none";
+                    var newResponse;
+                    var response = e.currentTarget.response;
+                    if (lastResponseLen === false) {
+                        newResponse = response;
+                        lastResponseLen = response.length;
+                    } else {
+                        newResponse = response.substring(lastResponseLen);
+                        lastResponseLen = response.length;
+                    }
+                    const prefix = "data: ";
+                    let jsonStr = newResponse.substring(newResponse.indexOf(prefix) + prefix.length).trim();
+                    // jsonStr = jsonStr.replaceAll("\\n", "<br>").replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+                    // console.log("jsonStr: ", jsonStr)
+                    // let json = JSON.parse(JSON.stringify(jsonStr));
+                    // //console.log("json: ", json);
+                    // //console.log("json?.choices: ", json?.choices);
+                    // if (json?.choices?.length > 0) {
+                    //     let text = json?.choices[0].text;
+                    //     //console.log("text: ", text);
+                    // }
+                    //console.log(newResponse);
+                    let extractText = extractTextFromData(jsonStr);
+                    // console.log("extractText: ", extractText);
+                    responseText += extractText;
+                    // $("#dialog").append($.parseHTML(extractText.replaceAll("\\n", "<br>")));
+                    if (responseText.match(/^[`]+$/)) {
+                        return;
+                    }
+                    // $("#dialog").html($.parseHTML(getMarkdownHtml(responseText)));
+                    $("#dialog").html($.parseHTML(getMarkdownHtml(responseText.replaceAll("\\n", "\n").replaceAll("\\\"", "\""))));
+                }
+            }
+        }).done(function (data) {
+            $("#submit").prop("disabled", false);
+            document.getElementsByClassName("loader")[0].style.display = "none";
+
+            console.log('Extract Text: \n', responseText);
+            console.log('Completed response: \n', data);
+        }).fail(function (data) {
+            $("#submit").prop("disabled", false);
+            document.getElementsByClassName("loader")[0].style.display = "none";
+            console.log('Error: ', data);
+            alert("Internal Server Error")
+        });
+        //console.log('Request Sent');
+    }
+
+
+    $("#submit").click(function () {
+        console.log("click submit...")
+        let prompt = $("#prompt").val();
+        //console.log("prompt", prompt);
+        if (prompt != null && prompt != "") {
+            readTextStreamByAjax(prompt);
+        } else {
+            alert("Please enter prompt")
+        }
+    })
+
+    // function readTextStreamByXhr() {
+    //     var lastResponseLen = false;
+    //     const xhr = new XMLHttpRequest();
+    //     //console.log('UNSENT', xhr.readyState); // readyState will be 0
+    //
+    //     xhr.open('post', url, true);
+    //     xhr.setRequestHeader("Content-Type", "application/json");
+    //     //console.log('OPENED', xhr.readyState); // readyState will be 1
+    //
+    //     xhr.onprogress = () => {
+    //         //console.log('LOADING', xhr.readyState); // readyState will be 3
+    //         var response = xhr.responseText;
+    //         var newResponse;
+    //         if (lastResponseLen === false) {
+    //             newResponse = response;
+    //             lastResponseLen = response.length;
+    //         } else {
+    //             newResponse = response.substring(lastResponseLen);
+    //             lastResponseLen = response.length;
+    //         }
+    //         // if (!newResponse.includes("\n")) {
+    //         //     return;
+    //         // }
+    //         //console.log(newResponse);
+    //     };
+    //
+    //     xhr.onload = () => {
+    //         //console.log('DONE', xhr.readyState); // readyState will be 4
+    //     };
+    //
+    //     xhr.send("hello");
+    // }
+    //
+    // readTextStreamByXhr();
+
+</script>
+</body>
+</html>
