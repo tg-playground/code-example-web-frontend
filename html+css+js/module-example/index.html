@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Counter</title>
+    <meta content="text/html; charset=utf-8" />
+    <script type="module" src="index.js" ></script>
+    <script type="module">
+        // You can only use import and export statements inside modules, not regular scripts.
+        import reset from './modules/counter.js'
+        console.log(reset(1));
+    </script>
+</head>
+<body>
+    <h2>Counter Example</h2>
+    <div>
+        <input id="counter" value="0"/>
+        <button id="addBtn">Add</button>
+        <button id="subBtn">Sub</button>
+        <button id="resetBtn">Reset</button>
+    </div>
+</body>
+</html>
