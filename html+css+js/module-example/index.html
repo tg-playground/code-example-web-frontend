@@ -3,11 +3,21 @@
 <head>
     <title>Counter</title>
     <meta content="text/html; charset=utf-8" />
+    <!--importmap must be added before any module script-->
+    <script type="importmap">
+        {
+            "imports": {
+                "counter": "./modules/counter.js"
+            }
+        }
+    </script>
     <script type="module" src="index.js" ></script>
     <script type="module">
         // You can only use import and export statements inside modules, not regular scripts.
-        import reset from './modules/counter.js'
-        import {name} from './modules/counter.js'
+        // import reset from './modules/counter.js'
+        import reset from 'counter'
+        // import {name} from './modules/counter.js'
+        import {name} from 'counter'
 
         console.log(reset(1));
         document.querySelector('#name').innerHTML = name;
