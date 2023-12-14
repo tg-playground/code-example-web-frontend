@@ -1,3 +1,5 @@
+const name = 'Jack';
+
 function add(counter) {
     counter++;
     return counter;
@@ -12,6 +14,6 @@ function reset(counter) {
     return 0;
 }
 
-export { add, sub };
+export { name, add, sub, reset };
 
 export default reset;

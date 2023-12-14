@@ -1,4 +1,4 @@
-import {add, sub} from './modules/counter.js'
+import {name, add, sub} from './modules/counter.js'
 // or import {default as reset} './modules/counter.js'
 import reset from './modules/counter.js'
 

@@ -7,11 +7,17 @@
     <script type="module">
         // You can only use import and export statements inside modules, not regular scripts.
         import reset from './modules/counter.js'
+        import {name} from './modules/counter.js'
+
         console.log(reset(1));
+        document.querySelector('#name').innerHTML = name;
     </script>
 </head>
 <body>
     <h2>Counter Example</h2>
+    <div style="padding-bottom: 15px;">
+        hello, <span id="name"></span>!
+    </div>
     <div>
         <input id="counter" value="0"/>
         <button id="addBtn">Add</button>
