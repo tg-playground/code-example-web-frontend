@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Text Handling</title>
+    <style>
+        textarea {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div style="padding: 5px 0 10px 0;">
+    Function:
+    <select id="func-select">
+        <option value="0">remove error new line from OCR text</option>
+    </select>
+</div>
+
+<div style="display: flex; padding: 0;">
+    <div style="width: 49%;">
+        <div>
+            <textarea id="input-textarea" rows="30" cols="50" placeholder="Enter text to handle..."></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end;">
+            <input id="submit" type="button" value="Submit"/>
+        </div>
+    </div>
+    <div style="width: 49%; margin-left: 2%;">
+        <div>
+            <textarea id="output-textarea" rows="30" cols="50" placeholder=""></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end;">
+            <button class="btn" data-clipboard-target="#output-textarea">
+                Copy to clipboard
+            </button>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
+<script>
+    const functions = {
+        removeOcrErrorNewLine: function (inputText) {
+            const fullLineCharNum = 25;
+            return inputText.split("\n").map(item => {
+                // replace characters
+                item = item.replaceAll(" ", "").replaceAll("…", "...").replaceAll("!", "！").replaceAll("?", "？")
+                    .replaceAll(",", "，").replaceAll(":", "：").replaceAll(";", "；").replaceAll("(", "（")
+                    .replaceAll(")", "）");
+                // remove special characters
+                item = item.replaceAll("①", "");
+                item = item.replaceAll(">", "").replaceAll("<", "");
+                if (item.toLowerCase().includes("page")) {
+                    return "\n\n" + item + "\n\n";
+                }
+                let endOfTheParagraph = item.length < fullLineCharNum && /[。！？!?：”]$/.test(item);
+                if (endOfTheParagraph) {
+                    return item + "\n";
+                }
+                return item;
+            }).join("")
+        }
+    }
+    const funcMap = new Map();
+    funcMap.set("0", functions.removeOcrErrorNewLine)
+
+    $("#submit").click(function () {
+        let inputText = $("#input-textarea").val()
+        console.log(inputText.split("\n"))
+        console.log(inputText.split("\n").map(item => item.length));
+
+        let selectFunc = $("#func-select").val();
+        console.log("select fucntion: " + selectFunc)
+
+        let handledText;
+        handledText = funcMap.get(selectFunc.toString()).apply(undefined, [inputText])
+
+        console.log(handledText);
+        $("#output-textarea").val(handledText)
+    })
+
+    var clipboard = new ClipboardJS('.btn');
+
+    clipboard.on('success', function (e) {
+        console.info('Action:', e.action);
+        console.info('Text:', e.text);
+        console.info('Trigger:', e.trigger);
+        tempAlert("copy successfully", 1000)
+        e.clearSelection();
+    });
+
+    clipboard.on('error', function (e) {
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
+        tempAlert("failed to copy", 1000)
+    });
+
+    function tempAlert(msg, duration) {
+        var el = document.createElement("div");
+        el.setAttribute("style", "position:absolute;top:50%;left:50%;transform: translate(-50%, -50%);background-color:white;border: 1px solid grey; padding: 10px;");
+        el.innerHTML = msg;
+        setTimeout(function () {
+            el.parentNode.removeChild(el);
+        }, duration);
+        document.body.appendChild(el);
+    }
+</script>
+</body>
+</html>
