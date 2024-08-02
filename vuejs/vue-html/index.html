@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Hello Vue.js v3</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body>
+<div id="hello-vue">
+    {{msg}}
+</div>
+
+<script type="text/javascript">
+    const helloVue = {
+        data() {
+            return {
+                msg: "Hello Vue.js 3!",
+            }
+        }
+    }
+    const app = Vue.createApp(helloVue)
+    app.mount('#hello-vue')
+</script>
+</body>
+</html>
