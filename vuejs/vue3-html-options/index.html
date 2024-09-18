@@ -6,20 +6,21 @@
 </head>
 
 <body>
-<div id="hello-vue">
-    {{msg}}
+<div id="app">
+    <p>{{message}}</p>
+    <input v-model="message" placeholder="edit me">
 </div>
 
 <script type="text/javascript">
-    const helloVue = {
+    const { createApp } = Vue
+
+    createApp({
         data() {
             return {
-                msg: "Hello Vue.js 3!",
+                message: 'Hello Vue 3!'
             }
         }
-    }
-    const app = Vue.createApp(helloVue)
-    app.mount('#hello-vue')
+    }).mount('#app')
 </script>
 </body>
 </html>
