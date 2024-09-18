@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Image Viewer</title>
+</head>
+<body>
+<div id="main">
+    <img src="img/scenery_1.jpeg" onclick="">
+</div>
+<script>
+    function enableImageFullScreenOnClick(elementId) {
+        let imageDivStr = `<div id="fullScreenImage" style="display: none; z-index:9999; position:fixed; left: 0px; top: 0px;
+                width: 100vw; height: 100vh; background: rgba(0,0,0,0.5);
+                margin: auto; text-align: center; line-height: 100vh; overflow: scroll;">
+                <img style="max-width: 90%;"/>
+            </div>`;
+        let imageDiv = document.createElement('div');
+        imageDiv.innerHTML = imageDivStr.trim();
+        imageDiv = imageDiv.firstChild;
+        if (document.querySelector("#fullScreenImage") != null) {
+            document.querySelector("#fullScreenImage").remove();
+        }
+        document.body.append(imageDiv);
+        Array.from(document.querySelectorAll("#" + elementId + " img")).forEach(item => {
+            item.addEventListener('click', function () {
+                console.log('click image');
+                document.querySelector("#fullScreenImage").style.display = 'block';
+                document.querySelector("#fullScreenImage img").setAttribute("src", item.getAttribute("src"));
+            });
+        })
+        document.querySelector("#fullScreenImage").addEventListener('click', function () {
+            console.log('click big image');
+            document.querySelector("#fullScreenImage").style.display = 'none';
+        })
+    }
+    enableImageFullScreenOnClick('main');
+
+</script>
+</body>
+</html>
