@@ -14,6 +14,7 @@
     Function:
     <select id="func-select">
         <option value="0">remove error new line from OCR text</option>
+        <option value="1">remove copyright from the Books App on mac</option>
     </select>
 </div>
 
@@ -60,12 +61,20 @@
                 }
                 return item;
             }).join("")
+        },
+        "removeCopyrightFromBooksAppOnMac": function (inputText) {
+            return inputText.replaceAll(/“(.+?)”\n\nExcerpt From\n.+?This material may be protected by copyright\./gs, '$1')
         }
     }
     const funcMap = new Map();
     funcMap.set("0", functions.removeOcrErrorNewLine)
+    funcMap.set("1", functions.removeCopyrightFromBooksAppOnMac)
 
     $("#submit").click(function () {
+        handleSubmit();
+    })
+
+    function handleSubmit() {
         let inputText = $("#input-textarea").val()
         console.log(inputText.split("\n"))
         console.log(inputText.split("\n").map(item => item.length));
@@ -78,7 +87,12 @@
 
         console.log(handledText);
         $("#output-textarea").val(handledText)
-    })
+    }
+
+    // submit automatically
+    $('#input-textarea').keyup(function(){
+        handleSubmit();
+    });
 
     var clipboard = new ClipboardJS('.btn');
 
