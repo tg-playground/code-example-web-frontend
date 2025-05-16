@@ -92,6 +92,8 @@
     // submit automatically
     $('#input-textarea').keyup(function(){
         handleSubmit();
+        $('.btn').click();
+        $("#input-textarea").focus();
     });
 
     var clipboard = new ClipboardJS('.btn');
