@@ -89,8 +89,12 @@
         $("#output-textarea").val(handledText)
     }
 
-    // submit automatically
-    $('#input-textarea').keyup(function(){
+    // submit and copy automatically
+    $('#input-textarea').on('keyup', function (event) {
+        const excludedKeySet = new Set(['Enter', 'Backspace', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Alt']);
+        if (excludedKeySet.has(event.key)) {
+            return;
+        }
         handleSubmit();
         $('.btn').click();
         $("#input-textarea").focus();
